@@ -12,7 +12,7 @@ steps:
   displayName: 'Authenticate with Azure Artifacts'
   inputs:
     artifactFeeds: 'python-packages-test'
-    onlyAddExtraIndex: false
+    onlyAddExtraIndex: true
 
 
 #Step 2: Install dependencies
