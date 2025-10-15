@@ -33,5 +33,5 @@ steps:
     command: 'build'
     Dockerfile: 'Dockerfile'
     tags: 'test:latest'
-    arguments: '--build-arg PIP_INDEX_URL=$(PIP_INDEX_URL)'
+    arguments: '--build-arg PIP_INDEX_URL="$(PIP_INDEX_URL)"'
 
