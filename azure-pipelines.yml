@@ -15,11 +15,22 @@ steps:
     onlyAddExtraIndex: true
 
 
-#Step 2: Install dependencies
 - script: |
+    # Create and activate a virtual environment
+    python -m venv venv_dir
+    source venv_dir/bin/activate  # For Linux/macOS
+    # .\venv_dir\Scripts\Activate.ps1  # Use this for PowerShell on Windows
+    # .\venv_dir\Scripts\activate.bat  # Use this for cmd on Windows
+
+    # Update pip inside the virtual environment
     python -m pip install --upgrade pip
+
+    # Install dependencies into the virtual environment
     pip install --no-cache-dir -r requirements.txt
-  displayName: 'Install dependencies'
+
+    # (Optional) Deactivate the virtual environment at the end of the script
+    # deactivate
+  displayName: 'Install dependencies in venv'
 
 # Step 3: Run the app
 - script: |
