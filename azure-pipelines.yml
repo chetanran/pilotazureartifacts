@@ -5,14 +5,13 @@ pool:
   name: 'Default'  # Changed from vmImage to name (self-hosted pool)
 
 
-variables:
-  FEED_NAME: 'secplayground/python-packages-test'
+
 steps:
 # Step 1: Authenticate to Azure Artifacts
 - task: PipAuthenticate@1
   displayName: 'Authenticate with Azure Artifacts'
   inputs:
-    artifactFeed: '$(FEED_NAME)'
+    artifactFeeds: 'python-packages-test'
     onlyAddExtraIndex: false
 
 #Step 2: Install dependencies
