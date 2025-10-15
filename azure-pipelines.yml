@@ -15,11 +15,7 @@ steps:
     onlyAddExtraIndex: false
 
 
-- powershell: |
-    Write-Host "PIP_INDEX_URL = $env:PIP_INDEX_URL"
-    Write-Host "PIP_EXTRA_INDEX_URL = $env:PIP_EXTRA_INDEX_URL"
-    Get-Content $env:PIP_AUTH_PATH
-  displayName: 'Print pip auth config'
+
 
 
 #Step 2: Install dependencies
