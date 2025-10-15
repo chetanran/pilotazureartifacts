@@ -7,9 +7,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-```
-
-**File: `requirements.txt`**
-```
-requests==2.31.0
-flask==3.0.0
