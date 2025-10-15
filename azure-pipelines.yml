@@ -14,6 +14,12 @@ steps:
     artifactFeeds: 'python-packages-test'
     onlyAddExtraIndex: false
 
+- script: |
+    echo "PIP_INDEX_URL = $PIP_INDEX_URL"
+    echo "PIP_EXTRA_INDEX_URL = $PIP_EXTRA_INDEX_URL"
+    cat ~/.config/pip/pip.conf || true
+  displayName: 'Print pip auth config'
+
 #Step 2: Install dependencies
 - script: |
     python -m pip install --upgrade pip
