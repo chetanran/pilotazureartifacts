@@ -14,11 +14,13 @@ steps:
     artifactFeeds: 'python-packages-test'
     onlyAddExtraIndex: false
 
-- script: |
-    echo "PIP_INDEX_URL = $PIP_INDEX_URL"
-    echo "PIP_EXTRA_INDEX_URL = $PIP_EXTRA_INDEX_URL"
-    cat ~/.config/pip/pip.conf || true
+
+- powershell: |
+    Write-Host "PIP_INDEX_URL = $env:PIP_INDEX_URL"
+    Write-Host "PIP_EXTRA_INDEX_URL = $env:PIP_EXTRA_INDEX_URL"
+    Get-Content $env:PIP_AUTH_PATH
   displayName: 'Print pip auth config'
+
 
 #Step 2: Install dependencies
 - script: |
