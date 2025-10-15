@@ -2,31 +2,32 @@ trigger:
   - main
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: 'Default'  # Changed from vmImage to name (self-hosted pool)
 
 steps:
 # Step 1: Authenticate to Azure Artifacts
 - task: PipAuthenticate@1
   displayName: 'Authenticate with Azure Artifacts'
   inputs:
-    artifactFeeds: 'python-packages-test'  # Your feed name
+    artifactFeeds: 'python-packages-test'
     onlyAddExtraIndex: false
 
-# Step 2: Install dependencies (test that packages download)
+# Step 2: Install dependencies
 - script: |
     python -m pip install --upgrade pip
     pip install -r requirements.txt
   displayName: 'Install dependencies'
 
-# Step 3: Run the app (simple test)
+# Step 3: Run the app
 - script: |
     python app.py
   displayName: 'Run application'
 
-# Step 4: Build Docker image
+# Step 4: Build Docker image (if you have Docker installed locally)
 - task: Docker@2
   displayName: 'Build Docker image'
   inputs:
     command: 'build'
     Dockerfile: 'Dockerfile'
     tags: 'test:latest'
+    arguments: '--build-arg PIP_INDEX_URL=$(PIP_INDEX_URL)'
