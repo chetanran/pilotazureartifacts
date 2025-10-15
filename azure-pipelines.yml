@@ -15,11 +15,11 @@ steps:
     artifactFeed: '$(FEED_NAME)'
     onlyAddExtraIndex: false
 
-# Step 2: Install dependencies
-#- script: |
- #   python -m pip install --upgrade pip
-  #  pip install -r requirements.txt
-  #displayName: 'Install dependencies'
+#Step 2: Install dependencies
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+  displayName: 'Install dependencies'
 
 # Step 3: Run the app
 - script: |
