@@ -31,13 +31,6 @@ steps:
     & .\venv_dir\Scripts\pip.exe install --no-cache-dir --index-url "$env:PIP_INDEX_URL" -r requirements.txt
   displayName: 'Create venv and install dependencies (using Azure Artifacts index)'
 
-- powershell: |
-    Write-Host "PIP_INDEX_URL=$env:PIP_INDEX_URL"
-    & .\venv_dir\Scripts\python.exe -V
-    & .\venv_dir\Scripts\pip.exe --version
-    # Quick verification: show which index is used when downloading a package (no install)
-    & .\venv_dir\Scripts\pip.exe download --no-deps --no-cache-dir -v requests -d .\pip_check || Write-Host "pip download exit $LASTEXITCODE"
-  displayName: 'Verify pip index and venv'
 
 - task: Docker@2
   displayName: 'Build Docker image'
