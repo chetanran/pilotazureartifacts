@@ -2,47 +2,43 @@ trigger:
   - main
 
 pool:
-  name: 'Default'  # Changed from vmImage to name (self-hosted pool)
-
-
+  name: 'Default'  # self-hosted pool
 
 steps:
-# Step 1: Authenticate to Azure Artifacts
+- task: UsePythonVersion@0
+  displayName: 'Use Python 3.x'
+  inputs:
+    versionSpec: '3.x'
+
 - task: PipAuthenticate@1
   displayName: 'Authenticate with Azure Artifacts'
   inputs:
     artifactFeeds: 'python-packages-test'
-    onlyAddExtraIndex: true
+    onlyAddExtraIndex: false
 
-
-- script: |
-    # Create and activate a virtual environment
+- powershell: |
     python -m venv venv_dir
-    # source venv_dir/bin/activate  # For Linux/macOS
-    .\venv_dir\Scripts\Activate.ps1  # Use this for PowerShell on Windows
-    # .\venv_dir\Scripts\activate.bat  # Use this for cmd on Windows
 
-    # Update pip inside the virtual environment
-    python -m pip install --upgrade pip
+    # Use the venv pip directly (avoids activation / execution policy issues)
+    & .\venv_dir\Scripts\pip.exe install --upgrade pip
 
-    # Install dependencies into the virtual environment
-    pip install --no-cache-dir -r requirements.txt
+    # Install using the index Azure Artifacts published to the environment
+    & .\venv_dir\Scripts\pip.exe install --no-cache-dir --index-url "$env:PIP_INDEX_URL" -r requirements.txt
+  displayName: 'Create venv and install dependencies (using Azure Artifacts index)'
 
-    # (Optional) Deactivate the virtual environment at the end of the script
-    # deactivate
-  displayName: 'Install dependencies in venv'
+- powershell: |
+    Write-Host "PIP_INDEX_URL=$env:PIP_INDEX_URL"
+    & .\venv_dir\Scripts\python.exe -V
+    & .\venv_dir\Scripts\pip.exe --version
+    # Optional quick verification (doesn't install deps): try a verbose download to show index usage
+    & .\venv_dir\Scripts\pip.exe download --no-deps --no-cache-dir -v requests -d .\pip_check || Write-Host "pip download exit $LASTEXITCODE"
+  displayName: 'Verify pip index and venv'
 
-# Step 3: Run the app
-- script: |
-    python app.py
-  displayName: 'Run application'
-
-# Step 4: Build Docker image (if you have Docker installed locally)
 - task: Docker@2
   displayName: 'Build Docker image'
   inputs:
     command: 'build'
     Dockerfile: 'Dockerfile'
     tags: 'test:latest'
-    arguments: '--build-arg PIP_INDEX_URL="$(PIP_INDEX_URL)"'
+    arguments: '--build-arg PIP_INDEX_URL=$(PIP_INDEX_URL)'
 
