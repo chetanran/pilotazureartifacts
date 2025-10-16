@@ -5,10 +5,15 @@ pool:
   name: 'Default'  # self-hosted pool
 
 steps:
-- task: UsePythonVersion@0
-  displayName: 'Use Python 3.x'
-  inputs:
-    versionSpec: '3.x'
+- powershell: |
+    try {
+      python -V
+      pip --version
+    } catch {
+      Write-Error "Python or pip not found in PATH on this agent."
+      exit 1
+    }
+  displayName: 'Verify Python present on self-hosted agent'
 
 - task: PipAuthenticate@1
   displayName: 'Authenticate with Azure Artifacts'
@@ -30,7 +35,7 @@ steps:
     Write-Host "PIP_INDEX_URL=$env:PIP_INDEX_URL"
     & .\venv_dir\Scripts\python.exe -V
     & .\venv_dir\Scripts\pip.exe --version
-    # Optional quick verification (doesn't install deps): try a verbose download to show index usage
+    # Quick verification: show which index is used when downloading a package (no install)
     & .\venv_dir\Scripts\pip.exe download --no-deps --no-cache-dir -v requests -d .\pip_check || Write-Host "pip download exit $LASTEXITCODE"
   displayName: 'Verify pip index and venv'
 
