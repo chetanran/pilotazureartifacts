@@ -31,6 +31,7 @@ steps:
     command: 'build'
     Dockerfile: 'Dockerfile'
     tags: 'test:latest'
-    arguments: '--build-arg PIP_INDEX_URL=https://$(AZURE_ARTIFACTS_TOKEN)@pkgs.dev.azure.com/secplayground/_packaging/python-packages-test/pypi/simple/'   
+    arguments: '--build-arg PIP_INDEX_URL=https://python-packages-test:$(AZURE_ARTIFACTS_TOKEN)@pkgs.dev.azure.com/secplayground/_packaging/python-packages-test/pypi/simple/'   
+    
 
 
