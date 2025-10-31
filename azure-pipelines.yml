@@ -2,35 +2,28 @@ trigger:
   - main
 
 pool:
-  name: 'Default'  # self-hosted pool
+  vmImage: 'ubuntu-latest'
 
 steps:
-- powershell: |
-    try {
-      python -V
-      pip --version
-    } catch {
-      Write-Error "Python or pip not found in PATH on this agent."
-      exit 1
-    }
-  displayName: 'Verify Python present on self-hosted agent'
+- script: |
+    set -e
+    python -V
+    pip --version
+  displayName: 'Verify Python present on agent'
 
 - task: PipAuthenticate@1
   displayName: 'Authenticate with Azure Artifacts'
   inputs:
     artifactFeeds: 'secplayground/python-packages-test'
-    onlyAddExtraIndex: false
+    
 
-- powershell: |
+- script: |
+    set -e
     python -m venv venv_dir
-
-    # Use the venv pip directly (avoids activation / execution policy issues)
-    & .\venv_dir\Scripts\pip.exe install --upgrade pip
-
-    # Install using the index Azure Artifacts published to the environment
-    & .\venv_dir\Scripts\pip.exe install --no-cache-dir --index-url "$env:PIP_INDEX_URL" -r requirements.txt
+    ./venv_dir/bin/pip install --upgrade pip
+    # Rely on PIP_INDEX_URL exported by PipAuthenticate (no explicit --index-url)
+    ./venv_dir/bin/pip install --no-cache-dir -r requirements.txt
   displayName: 'Create venv and install dependencies (using Azure Artifacts index)'
-
 
 - task: Docker@2
   displayName: 'Build Docker image'
@@ -38,5 +31,6 @@ steps:
     command: 'build'
     Dockerfile: 'Dockerfile'
     tags: 'test:latest'
-    arguments: '--build-arg PIP_INDEX_URL=$(PIP_INDEX_URL)'
+    arguments: '--build-arg PIP_INDEX_URL=https://$(AZURE_ARTIFACTS_TOKEN)@pkgs.dev.azure.com/secplayground/_packaging/python-packages-test/pypi/simple/'   
+
 
